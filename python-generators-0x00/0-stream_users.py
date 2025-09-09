@@ -1,13 +1,13 @@
-#!/usr/bin/python3
-
-# 0-stream_users.py
-
 seed = __import__('seed')
 
 connection = seed.connect_to_prodev()
 
+def stream_users(connection):
+    return seed.stream_data(connection, 'user_data')
+
+
 if connection:
-    user_generator = seed.stream_users(connection)
+    user_generator = stream_users(connection)
     print("Streaming users:")
     for user in user_generator:
         print(user)

@@ -103,6 +103,4 @@ def stream_data(connection, table_name):
         finally:
             cursor.close()
 
-# Stream Users
-def stream_users(connection):
-    return stream_data(connection, 'user_data')
+

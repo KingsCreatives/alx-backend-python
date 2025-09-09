@@ -1,5 +1,4 @@
 import sys
-
 from seed import connect_to_prodev
 
 def stream_users_in_batches(batch_size):
@@ -15,7 +14,7 @@ def stream_users_in_batches(batch_size):
                     break
                 yield rows
     except Exception as e:
-        print(f"An error occurred in stream_users_in_batches: {e}", file=sys.stderr)
+        print(f"An error occurred: {e}", file=sys.stderr)
     finally:
         if connection:
             connection.close()
