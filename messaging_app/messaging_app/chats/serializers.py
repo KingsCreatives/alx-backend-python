@@ -1,10 +1,11 @@
 from rest_framework import serializers
 from .models import User, Conversation, Message
 
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fiels = [
+        fields = [
             "id",
             "first_name",
             "last_name",
@@ -16,20 +17,24 @@ class UserSerializer(serializers.ModelSerializer):
         read_only_fields = ["id", "created_at"]
 
 
+
 class MessageSerializer(serializers.ModelSerializer):
-    sender_id = UserSerializer(read_only=True)
-    recipient_id = UserSerializer(read_only=True)
+    
+    sender = UserSerializer(read_only=True)
+    recipient = UserSerializer(read_only=True)
 
     class Meta:
         model = Message
         fields = [
-            'message_id',
-            'sender_id',
-            'recipient_id',
-            'message_body',
-            'sent_at'
+            "message_id",
+            "conversation",  
+            "sender",
+            "recipient",
+            "message_body",
+            "sent_at",
         ]
-        read_only_fields = ['message_id', 'sent_at']
+        read_only_fields = ["message_id", "sent_at", "sender"]  
+
 
 
 class ConversationSerializer(serializers.ModelSerializer):
@@ -38,5 +43,10 @@ class ConversationSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Conversation
-        fields = ['id', 'participants', 'created_at', 'messages']
-        read_only_fields = ['id', 'created_at']
+        fields = [
+            "id",
+            "participants",
+            "created_at",
+            "messages",
+        ]
+        read_only_fields = ["id", "created_at"]
