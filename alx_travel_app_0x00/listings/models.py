@@ -17,6 +17,17 @@ class User(AbstractUser):
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username', 'first_name', 'last_name']
 
+    groups = models.ManyToManyField(
+        'auth.Group',
+        related_name='listings_user_set',  
+        blank=True
+    )
+    user_permissions = models.ManyToManyField(
+        'auth.Permission',
+        related_name='listings_user_permissions_set',  
+        blank=True
+    )
+
     def __str__(self):
         return f"{self.email}"
     
