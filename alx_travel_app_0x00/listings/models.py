@@ -27,7 +27,7 @@ class Listing(models.Model):
       host = models.ForeignKey(
             User,
             on_delete=models.CASCADE,
-            related_name='host'
+            related_name='listings'
       )
       name = models.CharField(max_length=50, blank=True, null=True)
       description = models.TextField()
