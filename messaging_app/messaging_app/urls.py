@@ -23,7 +23,18 @@ router = DefaultRouter()
 router.register(r'conversations',ConversationViewSet, basename="conversation")
 router.register(r'messages', MessageViewSet, basename="message")
 
+from rest_framework_simplejwt.views import (TokenObtainPairView, TokenRefreshView, TokenVerifyView)
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/', include(router.urls))
+    path('api/', include(router.urls)),
+    
+     # 1. Get Access and Refresh Token (Login)
+    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
+    
+    # 2. Renew Access Token using Refresh Token
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+
+    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
 ]
