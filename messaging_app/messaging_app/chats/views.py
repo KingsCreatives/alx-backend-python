@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from django.contrib.auth import get_user_model
 from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
+from rest_framework.permissions import IsAuthenticated
+from .permissions import IsParticipantOfConversation
 
 User = get_user_model()
 
@@ -12,19 +14,18 @@ class ConversationViewSet(viewsets.ViewSet):
     Handles creating and listing conversations.
     Only authenticated users can access their own conversations.
     """
+    permission_classes = [IsAuthenticated,IsParticipantOfConversation]
 
     def list(self, request):
-        # Return only conversations the current user participates in
         conversations = Conversation.objects.filter(participants=request.user)
         serializer = ConversationSerializer(conversations, many=True)
         return Response(serializer.data)
 
     def create(self, request):
-        # Create a new conversation and add the requesting user
         conversation = Conversation.objects.create()
         conversation.participants.add(request.user)
 
-        # Add additional participants if provided
+        
         participants_id = request.data.get("participants", [])
         if participants_id:
             users = User.objects.filter(id__in=participants_id)
@@ -40,6 +41,8 @@ class MessageViewSet(viewsets.ViewSet):
     Only participants of a conversation can send or view messages.
     """
 
+    permission_classes = [IsAuthenticated,IsParticipantOfConversation]
+
     def list(self, request):
         conversation_id = request.query_params.get("conversation_id")
         if not conversation_id:
@@ -48,7 +51,6 @@ class MessageViewSet(viewsets.ViewSet):
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Ensure user is a participant of the conversation
         if not Conversation.objects.filter(id=conversation_id, participants=request.user).exists():
             return Response(
                 {"error": "Not authorized to view this conversation."},
@@ -67,21 +69,21 @@ class MessageViewSet(viewsets.ViewSet):
         conversation = serializer.validated_data.get("conversation")
         recipient = serializer.validated_data.get("recipient")
 
-        # Ensure the user is part of this conversation
+        
         if not conversation.participants.filter(id=request.user.id).exists():
             return Response(
                 {"error": "Not authorized to send messages in this conversation."},
                 status=status.HTTP_403_FORBIDDEN,
             )
 
-        # Ensure recipient is also in the conversation
+      
         if not conversation.participants.filter(id=recipient.id).exists():
             return Response(
                 {"error": "Recipient is not in this conversation."},
                 status=status.HTTP_400_BAD_REQUEST,
             )
 
-        # Create the message
+       
         message = Message.objects.create(
             conversation=conversation,
             sender=request.user,
