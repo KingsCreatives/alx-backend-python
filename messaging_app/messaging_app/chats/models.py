@@ -51,11 +51,14 @@ class Message(models.Model):
         related_name='messages'
     )
     
+    # owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='messages')
+
     sender = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,
         related_name='sent_messages'
     )
+
     recipient = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE,

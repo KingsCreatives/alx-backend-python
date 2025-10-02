@@ -18,6 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .chats.views import ConversationViewSet, MessageViewSet
+from chats.auth import CustomTokenObtainPairView, CustomTokenRefreshView
 
 router = DefaultRouter()
 router.register(r'conversations',ConversationViewSet, basename="conversation")
@@ -30,11 +31,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/', include(router.urls)),
     
-     # 1. Get Access and Refresh Token (Login)
-    path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    
-    # 2. Renew Access Token using Refresh Token
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
-
-    path('api/token/verify/', TokenVerifyView.as_view(), name='token_verify'),
+    # Auth endpoints
+    path('api/token/', CustomTokenObtainPairView.as_view(), name='token_obtain_pair'),
+    path('api/token/refresh/', CustomTokenRefreshView.as_view(), name='token_refresh'),
 ]
