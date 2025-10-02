@@ -151,3 +151,24 @@ class TestIntegrationGithubOrgClient(unittest.TestCase):
         """
         cls.get_patcher.stop()
 
+
+    def test_public_repos(self):
+        """
+        Tests public_repos method (full list) using the fixtures.
+        Verifies that all repo names are returned.
+        """
+        client = GithubOrgClient("google")
+        result = client.public_repos()
+        
+        
+        self.assertEqual(result, self.expected_repos)
+
+    def test_public_repos_with_license(self):
+        """
+        Tests public_repos with license filter ("apache-2.0") using the fixtures.
+        Verifies only licensed repos are returned.
+        """
+        client = GithubOrgClient("google")
+        
+        result = client.public_repos(license="apache-2.0")
+        self.assertEqual(result, self.apache2_repos)
