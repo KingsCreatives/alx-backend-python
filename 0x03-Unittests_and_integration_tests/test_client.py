@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import PropertyMock, Mock, patch
-from parameterized import parameterized
-
+from parameterized import parameterized, parameterized_class
+from fixtures import TEST_PAYLOAD
+from typing import Dict, List
 from client import GithubOrgClient
 from utils import get_json
 
@@ -98,4 +99,55 @@ class TestGithubOrgClient(unittest.TestCase):
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
         
+
+@parameterized_class(
+    ('org_payload', 'repos_payload', 'expected_repos', 'apache2_repos'), 
+    TEST_PAYLOAD
+)
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """
+    Integration tests for GithubOrgClient.public_repos. 
+    Mocks only external HTTP calls.
+    """
+    
+    org_payload: Dict
+    repos_payload: List[Dict]
+    expected_repos: List[str]
+    apache2_repos: List[str]
+
+    @classmethod
+    def setUpClass(cls):
+        """
+        Mocks requests.get to return fixtures based on the URL using side_effect.
+        This sets up the mock for the entire test class.
+        """
+       
+        cls.get_patcher = patch('requests.get')
+        mock_get = cls.get_patcher.start()
+
         
+        org_url = "https://api.github.com/orgs/google"
+        repos_url = cls.org_payload["repos_url"]
+        
+       
+        def side_effect(url):
+            """Returns the correct Mock response based on the URL."""
+            mock_response = Mock()
+            if url == org_url:
+                mock_response.json.return_value = cls.org_payload
+            elif url == repos_url:
+                mock_response.json.return_value = cls.repos_payload
+            else:
+                raise ValueError(f"URL not mocked: {url}")
+            return mock_response
+
+        
+        mock_get.side_effect = side_effect
+
+    @classmethod
+    def tearDownClass(cls):
+        """
+        Stops the patcher to restore the original requests.get method.
+        """
+        cls.get_patcher.stop()
+
