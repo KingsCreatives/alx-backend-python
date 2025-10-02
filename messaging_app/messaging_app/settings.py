@@ -27,7 +27,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework_simplejwt',
-    'messaging_app.chats'
+    'messaging_app.chats',
+    'django_filters'
 ]
 
 AUTH_USER_MODEL = 'chats.User'

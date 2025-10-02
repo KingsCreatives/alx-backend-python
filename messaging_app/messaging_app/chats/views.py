@@ -5,6 +5,10 @@ from .models import Conversation, Message
 from .serializers import ConversationSerializer, MessageSerializer
 from rest_framework.permissions import IsAuthenticated
 from .permissions import IsParticipantOfConversation
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import generics
+from .pagination import MessagePagination
+from .filters import MessageFilter
 
 User = get_user_model()
 
@@ -93,3 +97,22 @@ class MessageViewSet(viewsets.ViewSet):
 
         output_serializer = MessageSerializer(message)
         return Response(output_serializer.data, status=status.HTTP_201_CREATED)
+
+
+class MessageListView(generics.ListAPIView):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
+    pagination_class = MessagePagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = MessageFilter
+
+    def get_queryset(self):
+        conversation_id = self.request.query_params.get("conversation_id")
+
+        if not conversation_id:
+            return Message.objects.none()
+        
+        return Message.objects.filter(
+            conversation_id = conversation_id,
+            conversation__participants=self.request.user
+        )
