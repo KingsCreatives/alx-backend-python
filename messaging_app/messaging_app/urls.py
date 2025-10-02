@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 from .chats.views import ConversationViewSet, MessageViewSet, MessageListView
-from chats.auth import CustomTokenObtainPairView, CustomTokenRefreshView
+from .chats.auth import CustomTokenObtainPairView, CustomTokenRefreshView
 
 router = DefaultRouter()
 router.register(r'conversations',ConversationViewSet, basename="conversation")
