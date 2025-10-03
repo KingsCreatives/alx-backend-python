@@ -30,6 +30,11 @@ ALLOWED_HOSTS = []
 
 # Application definition
 
+ALLOWED_CHAT_HOURS = {
+    'start': 6,   
+    'end': 21,    
+}
+
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,7 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
-    # Custom middleware (order: logging first so it logs request before view runs)
+    
     'chats.middleware.request_logging.RequestLoggingMiddleware',
     'chats.middleware.restrict_time.RestrictAccessByTimeMiddleware',
     'chats.middleware.offensive_rate_limit.OffensiveLanguageMiddleware',
@@ -108,6 +113,9 @@ AUTH_PASSWORD_VALIDATORS = [
         'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
     },
 ]
+
+AUTH_USER_MODEL = "chats.User"
+
  
 
 # Internationalization
