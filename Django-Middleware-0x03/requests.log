@@ -1,0 +1,26 @@
+import pathlib
+BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {'format': '%(message)s'}
+    },
+    'handlers': {
+        'requests_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'requests.log',
+            'formatter': 'simple'
+        },
+        'console': {'class': 'logging.StreamHandler'}
+    },
+    'loggers': {
+        'requests_logger': {
+            'handlers': ['requests_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    }
+}
