@@ -98,7 +98,7 @@ class OffensiveLanguageMiddleware:
 # 4. Role Permission Middleware
 # -------------------------------
 
-class RolePermissionMiddleware:
+class RolepermissionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         self.restricted_paths = ["/chats/admin/"]  # example admin path
