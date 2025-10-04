@@ -58,10 +58,10 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 
     
-    'chats.middleware.request_logging.RequestLoggingMiddleware',
-    'chats.middleware.restrict_time.RestrictAccessByTimeMiddleware',
-    'chats.middleware.offensive_rate_limit.OffensiveLanguageMiddleware',
-    'chats.middleware.role_permission.RolePermissionMiddleware',
+    "chats.middleware.RequestLoggingMiddleware",
+    "chats.middleware.RestrictAccessByTimeMiddleware",
+    "chats.middleware.OffensiveLanguageMiddleware",
+    "chats.middleware.RolePermissionMiddleware",
 ]
 
 ROOT_URLCONF = 'config.urls'

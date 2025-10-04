@@ -24,3 +24,15 @@ LOGGING = {
         },
     }
 }
+2025-10-04 09:37:26,345 - /Users/owner/Desktop/practice/alx-backend-python/Django-Middleware-0x03/chats/middleware.py changed, reloading.
+2025-10-04 09:39:30,128 - /Users/owner/Desktop/practice/alx-backend-python/Django-Middleware-0x03/config/settings.py changed, reloading.
+2025-10-04 09:40:13,834 - User: Anonymous - Path: /
+2025-10-04 09:40:13,835 - Forbidden: /
+2025-10-04 09:40:14,307 - User: Anonymous - Path: /favicon.ico
+2025-10-04 09:40:14,307 - Forbidden: /favicon.ico
+2025-10-04 09:41:19,612 - User: Anonymous - Path: /
+2025-10-04 09:41:19,612 - Forbidden: /
+2025-10-04 09:42:33,073 - /Users/owner/Desktop/practice/alx-backend-python/Django-Middleware-0x03/chats/middleware.py changed, reloading.
+2025-10-04 09:42:38,043 - /Users/owner/Desktop/practice/alx-backend-python/Django-Middleware-0x03/chats/middleware.py changed, reloading.
+2025-10-04 09:42:58,196 - User: Anonymous - Path: /
+2025-10-04 09:42:58,233 - Not Found: /
