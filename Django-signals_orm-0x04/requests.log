@@ -1,0 +1,47 @@
+import pathlib
+BASE_DIR = pathlib.Path(__file__).resolve().parent.parent
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {'format': '%(message)s'}
+    },
+    'handlers': {
+        'requests_file': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': BASE_DIR / 'requests.log',
+            'formatter': 'simple'
+        },
+        'console': {'class': 'logging.StreamHandler'}
+    },
+    'loggers': {
+        'requests_logger': {
+            'handlers': ['requests_file', 'console'],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    }
+}
+2025-10-04 09:37:26,345 - /Users/owner/Desktop/practice/alx-backend-python/Django-Middleware-0x03/chats/middleware.py changed, reloading.
+2025-10-04 09:39:30,128 - /Users/owner/Desktop/practice/alx-backend-python/Django-Middleware-0x03/config/settings.py changed, reloading.
+2025-10-04 09:40:13,834 - User: Anonymous - Path: /
+2025-10-04 09:40:13,835 - Forbidden: /
+2025-10-04 09:40:14,307 - User: Anonymous - Path: /favicon.ico
+2025-10-04 09:40:14,307 - Forbidden: /favicon.ico
+2025-10-04 09:41:19,612 - User: Anonymous - Path: /
+2025-10-04 09:41:19,612 - Forbidden: /
+2025-10-04 09:42:33,073 - /Users/owner/Desktop/practice/alx-backend-python/Django-Middleware-0x03/chats/middleware.py changed, reloading.
+2025-10-04 09:42:38,043 - /Users/owner/Desktop/practice/alx-backend-python/Django-Middleware-0x03/chats/middleware.py changed, reloading.
+2025-10-04 09:42:58,196 - User: Anonymous - Path: /
+2025-10-04 09:42:58,233 - Not Found: /
+2025-10-08 07:24:58,660 - User: Anonymous - Path: /
+2025-10-08 07:24:58,703 - Not Found: /
+2025-10-08 07:24:59,112 - User: Anonymous - Path: /apple-touch-icon-precomposed.png
+2025-10-08 07:24:59,120 - Not Found: /apple-touch-icon-precomposed.png
+2025-10-08 07:24:59,337 - User: Anonymous - Path: /apple-touch-icon.png
+2025-10-08 07:24:59,361 - Not Found: /apple-touch-icon.png
+2025-10-08 07:25:11,041 - User: Anonymous - Path: /
+2025-10-08 07:25:11,046 - Not Found: /
+2025-10-08 07:25:12,646 - User: Anonymous - Path: /admin/login/
