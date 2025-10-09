@@ -6,9 +6,17 @@ User = get_user_model()
 
 # Create your models here.
 class Message(models.Model):
-    sender = models.ForeignKey(User, related_name='messaging_sent_messages', on_delete=models.CASCADE)
-    receiver = models.ForeignKey(User, name='messaging_recived_messages', on_delete=models.CASCADE)
-    context = models.TextField()
+    sender = models.ForeignKey(User, related_name='messaging_sender', on_delete=models.CASCADE)
+    receiver = models.ForeignKey(User, name='messaging_receiver', on_delete=models.CASCADE)
+    parent_message = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        related_name='messaging_replies',
+        on_delete=models.CASCADE
+    )
+
+    content = models.TextField()
     timestamp = models.DateTimeField(auto_now_add=True)
     edited = models.BooleanField(default=False)
 
