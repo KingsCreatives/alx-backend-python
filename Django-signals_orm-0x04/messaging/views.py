@@ -1,10 +1,17 @@
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import get_user_model
+from django.views.decorators.cache import cache_page
 from .models import Message
 
 User = get_user_model()
 
 # Create your views here.
+@cache_page(60)
+def message_list(request):
+    messages = Message.objects.all().select_related('sender', 'receiver')
+    context = {"message": messages}
+    return render(request, 'messaging/message_list.html', context)
+
 def delete_user(request, user_id):
     user_to_delete = get_object_or_404(User,pk=user_id)
 
