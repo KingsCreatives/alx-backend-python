@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-web-deployment
+  labels:
+    app: django_web
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: django_web
+  template:
+    metadata:
+      labels:
+        app: django_web
+    spec:
+      containers:
+      - name: django-web-container
+        image: messaging_app:latest 
+        ports:
+        - containerPort: 8000
+        env:
+        
+        - name: DB_HOST
+          value: "mysql-db-service" 
+
+        - name: DB_PORT
+          value: "3306"
+        
+        - name: DJANGO_SECRET_KEY
+          value: "secure-secret-key-placeholder" 
+
+        - name: DB_NAME
+          value: "mydjangoappdb"
+
+        - name: DB_USER
+          value: "user" 
+
+        - name: DB_PASSWORD
+          value: "password" 
