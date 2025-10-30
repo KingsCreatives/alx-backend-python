@@ -1,0 +1,66 @@
+#!/bin/bash
+
+DEPLOYMENT_NAME="django-app-deployment"
+SERVICE_NAME="django-app-service"
+REPLICAS=3
+
+echo "--- 1. Scaling the Deployment to $REPLICAS replicas ---"
+
+kubectl scale deployment $DEPLOYMENT_NAME --replicas=$REPLICAS
+
+if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to initiate scaling for deployment $DEPLOYMENT_NAME."
+    exit 1
+fi
+
+echo "Scaling initiated successfully. Waiting for Pods to become Ready..."
+
+
+echo "--- 2. Verifying the multiple running Pods ---"
+
+
+kubectl rollout status deployment/$DEPLOYMENT_NAME
+if [ $? -ne 0 ]; then
+    echo "ERROR: Deployment failed to rollout. Check 'kubectl describe deployment $DEPLOYMENT_NAME' for details."
+    exit 1
+fi
+
+
+echo "Listing all Pods for $DEPLOYMENT_NAME:"
+kubectl get pods -l app=django-app 
+
+echo "-------------------------------------"
+
+
+echo "--- 3. Setting up External Access and 'wrk' Load Test ---"
+
+APP_URL=$(minikube service $SERVICE_NAME --url)
+
+if [ -z "$APP_URL" ]; then
+    echo "ERROR: Could not get URL for service $SERVICE_NAME. Ensure Minikube is running."
+    exit 1
+fi
+
+echo "Django App is accessible internally at: $APP_URL"
+echo "Performing 10-second load test with 2 threads and 10 connections..."
+echo "-------------------------------------"
+
+
+wrk -t2 -c10 -d10s $APP_URL
+
+echo "Load testing complete."
+echo "-------------------------------------"
+
+
+echo "--- 4. Setting up Metrics Server for 'kubectl top' ---"
+
+if ! minikube addons list | grep "metrics-server.*enabled" ; then
+    echo "Metrics Server (required for 'kubectl top') is not enabled. Enabling now..."
+    minikube addons enable metrics-server
+    
+    echo "Waiting 60 seconds for metrics server to stabilize..."
+    sleep 60 
+fi
+
+echo "--- 5. Monitoring resource usage ('kubectl top pods') ---"
+kubectl top pods -l app=django-app

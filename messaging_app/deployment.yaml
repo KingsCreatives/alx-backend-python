@@ -1,13 +1,20 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+<<<<<<< HEAD
   name: django-web-deployment
   labels:
     app: django_web
+=======
+  name: django-app-deployment
+  labels:
+    app: django-app
+>>>>>>> kubernete-basic
 spec:
   replicas: 1
   selector:
     matchLabels:
+<<<<<<< HEAD
       app: django_web
   template:
     metadata:
@@ -38,3 +45,36 @@ spec:
 
         - name: DB_PASSWORD
           value: "password" 
+=======
+      app: django-app
+  template:
+    metadata:
+      labels:
+        app: django-app
+    spec:
+      containers:
+      - name: django-web
+        image: django-messaging-app:v1.0
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DB_HOST
+          value: "localhost"
+        - name: DB_PORT
+          value: "3306"
+        - name: DJANGO_SECRET_KEY
+          value: "dummy-secret-key"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: django-app-service
+spec:
+  type: ClusterIP
+  selector:
+    app: django-app
+  ports:
+    - protocol: TCP
+      port: 8000
+      targetPort: 8000
+>>>>>>> kubernete-basic
