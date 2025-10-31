@@ -4,22 +4,22 @@ kind: Deployment
 metadata:
   name: django-blue
   labels:
-    version: v1.0
+    version: v2.0
 spec:
   replicas: 3
   selector:
     matchLabels:
       app: django-app
-      version: v1.0
+      version: v2.0
   template:
     metadata:
       labels:
         app: django-app
-        version: v1.0
+        version: v2.0
     spec:
       containers:
       - name: django-web
-        image: django-messaging-app:v1.0 
+        image: django-messaging-app:v2.0 
         ports:
         - containerPort: 8000
         env:
