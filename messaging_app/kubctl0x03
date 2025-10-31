@@ -1,0 +1,71 @@
+#!/bin/bash
+
+DEPLOYMENT_NAME="django-blue"
+INGRESS_IP=$(minikube ip) 
+LOG_FILE="downtime_test.log"
+
+echo "--- Rolling Update of $DEPLOYMENT_NAME to v2.0 ---"
+
+if [ -z "$INGRESS_IP" ] || [ "$INGRESS_IP" = "127.0.0.1" ]; then
+    echo "ERROR: Minikube IP not available. Ensure Minikube is started and Ingress is configured."
+    exit 1
+fi
+
+echo "1. Monitoring connection to $INGRESS_IP for the duration of the update..."
+echo "Requests are being logged to $LOG_FILE"
+
+
+while true; do
+    curl -s --max-time 1 $INGRESS_IP > /dev/null
+    STATUS_CODE=$?
+    if [ $STATUS_CODE -ne 0 ]; then
+        echo "$(date +%H:%M:%S) - FAILURE (Code $STATUS_CODE)" >> $LOG_FILE
+    else
+        echo "$(date +%H:%M:%S) - SUCCESS" >> $LOG_FILE
+    fi
+    sleep 0.1
+done &
+CURL_PID=$! -
+
+echo "Applying updated $DEPLOYMENT_NAME (triggers Rolling Update)..."
+
+kubectl apply -f blue_deployment.yaml
+
+if [ $? -ne 0 ]; then
+    kill $CURL_PID
+    echo "ERROR: Failed to apply deployment file. Aborting."
+    exit 1
+fi
+
+
+echo "3. Monitoring rollout status (Waiting for all new Pods to become ready)..."
+kubectl rollout status deployment/$DEPLOYMENT_NAME --timeout=5m
+
+if [ $? -ne 0 ]; then
+    kill $CURL_PID
+    echo "ERROR: Rolling update failed or timed out. Check logs."
+    exit 1
+fi
+
+echo "Rolling Update successfully completed."
+
+
+kill $CURL_PID
+wait $CURL_PID 2>/dev/null
+echo "--------------------------------------------------------"
+
+# --- 4. Verify Downtime and Final Status ---
+echo "4. Verifying Application Health and Downtime..."
+
+
+FAILURES=$(grep -c "FAILURE" $LOG_FILE)
+
+if [ "$FAILURES" -gt 0 ]; then
+    echo "WARNING: $FAILURES failures detected during the update. Check $LOG_FILE for details."
+else
+    echo "ZERO DOWNTIME achieved! All continuous requests succeeded during the update."
+fi
+
+
+echo "--- Final Pod Verification ---"
+kubectl get pods -l app=django-app,version=v2.0

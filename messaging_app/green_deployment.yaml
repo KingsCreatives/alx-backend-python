@@ -1,0 +1,33 @@
+# Green Deployment
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: django-green
+  labels:
+    version: v2.0
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: django-app
+      version: v2.0
+  template:
+    metadata:
+      labels:
+        app: django-app
+        version: v2.0
+    spec:
+      containers:
+      - name: django-web-v2
+        image: django-messaging-app:v2.0 
+        ports:
+        - containerPort: 8000
+        env:
+        # simple environment variables for Minikube
+        - name: DB_HOST
+          value: "mysql-service"
+        - name: DB_PORT
+          value: "3306"
+        - name: DJANGO_SECRET_KEY
+          value: "dummy-secret-key"

@@ -1,0 +1,8 @@
+minikube addons enable ingress
+
+kubectl get pods -n ingress
+
+kubectl apply -f ingress.yaml
+kubectl get ingress
+export INGRESS_IP=$(minikube ip)
+curl $INGRESS_IP
