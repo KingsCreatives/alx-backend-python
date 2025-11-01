@@ -1,0 +1,54 @@
+pipeline {
+    agent any
+    
+    environment {
+        PYTHON_VERSION = '3.9'
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                echo 'Code checked out from GitHub'
+            }
+        }
+        
+        stage('Setup Python Environment') {
+            steps {
+                sh '''
+                    python3 -m venv venv
+                    . venv/bin/activate
+                    pip install --upgrade pip
+                    pip install -r messaging_app/requirements.txt
+                '''
+            }
+        }
+        
+        stage('Run Tests') {
+            steps {
+                sh '''
+                    . venv/bin/activate
+                    cd messaging_app
+                    pytest --verbose --junit-xml=test-results.xml
+                '''
+            }
+        }
+        
+        stage('Publish Test Results') {
+            steps {
+                junit 'messaging_app/test-results.xml'
+            }
+        }
+    }
+    
+    post {
+        always {
+            echo 'Pipeline finished!'
+        }
+        success {
+            echo 'All tests passed! ✅'
+        }
+        failure {
+            echo 'Tests failed! ❌'
+        }
+    }
+}
