@@ -29,6 +29,11 @@ pipeline {
                     . venv/bin/activate
                     cd messaging_app
                     export DJANGO_SETTINGS_MODULE=messaging_app.settings
+                    
+                    
+                    echo "Running pytest..."
+                    pytest --collect-only
+                    
                     pytest --verbose --junit-xml=test-results.xml
                 '''
             }
@@ -44,6 +49,7 @@ pipeline {
     post {
         always {
             echo 'Pipeline finished!'
+            sh 'rm -rf venv'
         }
         success {
             echo 'All tests passed! ✅'
