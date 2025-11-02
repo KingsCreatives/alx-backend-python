@@ -28,6 +28,7 @@ pipeline {
                 sh '''
                     . venv/bin/activate
                     cd messaging_app
+                    export DJANGO_SETTINGS_MODULE=messaging_app.settings
                     pytest --verbose --junit-xml=test-results.xml
                 '''
             }
