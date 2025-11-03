@@ -10,3 +10,4 @@ pytest-django==4.9.0
 coverage==7.6.1
 sqlparse==0.5.3
 typing_extensions==4.15.0
+pytest-cov>=4.0.0
