@@ -1,16 +1,15 @@
-name: messaging_app CI - Testing
+name: Messagin_app CI - Testing & Code Quality
 
 on:
   push:
-    branches: [ main, develop ]  
+    branches: [ main, develop ]
   pull_request:
-    branches: [ main ]  
-# Define the jobs to run
+    branches: [ main ]
+
 jobs:
   test:
-    name: Run Tests
-    runs-on: ubuntu-latest  
-    
+    name: Run Tests & Code Quality Checks
+    runs-on: ubuntu-latest
     
     services:
       mysql:
@@ -29,23 +28,29 @@ jobs:
           --health-retries=3
     
     steps:
-      
       - name: Checkout code
         uses: actions/checkout@v4
-      
       
       - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip' 
-      
+          cache: 'pip'
       
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r messaging_app/requirements.txt
       
+    
+      - name: Lint with flake8
+        run: |
+          cd messaging_app
+          # Stop build if there are Python syntax errors or undefined names
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+          # Exit-zero treats all errors as warnings
+          flake8 . --count --exit-zero --max-complexity=10 --statistics
+        continue-on-error: false  
       
       - name: Wait for MySQL
         run: |
@@ -55,27 +60,38 @@ jobs:
           done
           echo 'MySQL is ready!'
       
-     
-      - name: Run Django tests
+      - name: Run Django tests with coverage
         env:
           DJANGO_SETTINGS_MODULE: messaging_app.settings
           DATABASE_URL: mysql://django_user:django_pass@127.0.0.1:3306/test_messaging_db
         run: |
           cd messaging_app
-          pytest --verbose --junit-xml=test-results.xml --cov=. --cov-report=xml
+          pytest --verbose --junit-xml=test-results.xml --cov=. --cov-report=xml --cov-report=html --cov-report=term
       
+      
+      - name: Coverage Summary
+        if: always()
+        run: |
+          cd messaging_app
+          coverage report --skip-empty
       
       - name: Upload test results
-        if: always()  
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results
           path: messaging_app/test-results.xml
       
-     
-      - name: Upload coverage report
+      - name: Upload coverage report (XML)
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: coverage-report
+          name: coverage-xml
           path: messaging_app/coverage.xml
+      
+      - name: Upload coverage report (HTML)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-html
+          path: messaging_app/htmlcov/
